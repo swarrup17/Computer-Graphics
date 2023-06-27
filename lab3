@@ -1,0 +1,61 @@
+#include <GL/glut.h>
+
+int x_max=700,y_max=600;
+int x_position=100;
+int y_position=100;
+int xstepsize=10,ystepsize=10;
+int width=100;
+int height=100;
+void myInit(void)
+{
+    glutInitWindowSize(x_max,y_max);
+    glutInitWindowPosition(100,100);
+    glutInitDisplayMode(GLUT_RGB|GLUT_SINGLE);
+    glutCreateWindow("Square");
+    glClearColor(1,1,1,1);
+    glClear(GL_COLOR_BUFFER_BIT);
+    glColor3d(0,0,0);
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    gluOrtho2D(0,640,0,640);
+    glMatrixMode(GL_MODELVIEW);
+
+}
+void updatePolygon(int v)
+{
+
+    if(x_position+width>=x_max || x_position<0)
+        xstepsize=-xstepsize;
+   if(y_position+height>=y_max || y_position<0)
+        ystepsize=-ystepsize;
+        x_position+=xstepsize;
+        y_position+=ystepsize;
+        glutPostRedisplay();
+        glutTimerFunc(10,updatePolygon,0);
+}
+void drawRectangle()
+{
+   glClear(GL_COLOR_BUFFER_BIT);
+   int px1=x_position,py1=y_position;
+   int px2=x_position+width,py2=y_position;
+   int px3=x_position+width,py3=y_position+height;
+   int px4=x_position,py4=y_position+height;
+   glColor3d(1,0,0);
+   glBegin(GL_POLYGON);
+   glVertex2f(px1,py1);
+   glVertex2f(px2,py2);
+    glVertex2f(px3,py3);
+    glVertex2f(px4,py4);
+    glEnd();
+    glFlush();
+}
+int main(int argc,char *argv[])
+{
+   glutInit(&argc,argv);
+   myInit();
+   glutDisplayFunc(drawRectangle);
+   glutTimerFunc(0,updatePolygon,0);
+   glutMainLoop();
+   return 0;
+
+}
