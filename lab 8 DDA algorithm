@@ -1,0 +1,55 @@
+#include <GL/glut.h>
+#include <iostream>
+#include <cmath>
+
+using namespace std;
+
+void plotPixel()
+{
+    int xi, yi, xf, yf, dx,dy;
+    float x,y,xinc,yinc;
+    int step,i=0;
+    cout << "Enter the initial points: ";
+    cin >> xi >> yi;
+    cout << "Enter the final points: ";
+    cin >> xf >> yf;
+    dx = xf - xi;
+    dy = yf - yi;
+    x=xi;
+    y=yi;
+        if(abs(dx)>abs(dy)){
+            step=abs(dx);
+            }
+        else
+        {
+           step=abs(dy);
+        }
+        xinc=dx/step;
+        yinc=dy/step;
+        glBegin(GL_POINTS);
+        glVertex2f(round(x), round(y));
+        while(i<step)
+        {
+            x+=xinc;
+            y+=yinc;
+            glVertex2f(round(x), round(y));
+            i++;
+        }
+    glEnd();
+    glFlush();
+}
+int main(int argc, char* argv[])
+{
+    glutInit(&argc, argv);
+    glutInitDisplayMode(GLUT_RGB | GLUT_SINGLE);
+    glutInitWindowSize(800, 600);
+    glutInitWindowPosition(100, 100);
+    glutCreateWindow("Swarup Dahal"); //give your own name
+    glClearColor(0.0, 0.0, 0.0, 1.0);
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    gluOrtho2D(0, 800, 0, 600);
+    glutDisplayFunc(plotPixel);
+    glutMainLoop();
+    return 0;
+}
