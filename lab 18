@@ -1,0 +1,102 @@
+#include <GL/glut.h>
+#include <cmath>
+
+float x, y;
+float width, height;
+int win_width = 800;
+int win_height = 600;
+
+void drawRectangle(float x, float y, float width, float height) {
+    glColor3f(0.0f, 0.0f, 1.0f);
+    glLineWidth(2.0);
+    glBegin(GL_LINE_LOOP);
+    glVertex2f(x, y);
+    glVertex2f(x + width, y);
+    glVertex2f(x + width, y + height);
+    glVertex2f(x, y + height);
+    glEnd();
+}
+
+void matrixMultiply(float matrix[3][3], float& x, float& y) {
+    float tempX = matrix[0][0] * x + matrix[0][1] * y + matrix[0][2];
+    float tempY = matrix[1][0] * x + matrix[1][1] * y + matrix[1][2];
+    x = tempX;
+    y = tempY;
+}
+
+void display() {
+    glClear(GL_COLOR_BUFFER_BIT);
+
+    // Draw the original rectangle
+    drawRectangle(x, y, width, height);
+
+    // Calculate the center of rotation
+    float centerX = 150.0f;
+    float centerY = 125.0f;
+
+    // Create rotation matrix
+    float angle = 30.0 * M_PI / 180.0;
+    float cosA = cos(angle);
+    float sinA = sin(angle);
+
+    float rotationMatrix[3][3] = {
+        {cosA, -sinA, centerX * (1 - cosA) + centerY * sinA},
+        {sinA, cosA, centerY * (1 - cosA) - centerX * sinA},
+        {0, 0, 1}
+    };
+
+    // Rotate the vertices of the rectangle using matrix multiplication
+    float x1 = x;
+    float y1 = y;
+    float x2 = x + width;
+    float y2 = y;
+    float x3 = x + width;
+    float y3 = y + height;
+    float x4 = x;
+    float y4 = y + height;
+
+    matrixMultiply(rotationMatrix, x1, y1);
+    matrixMultiply(rotationMatrix, x2, y2);
+    matrixMultiply(rotationMatrix, x3, y3);
+    matrixMultiply(rotationMatrix, x4, y4);
+
+    // Draw the rotated rectangle
+    glBegin(GL_LINE_LOOP);
+    glVertex2f(x1, y1);
+    glVertex2f(x2, y2);
+    glVertex2f(x3, y3);
+    glVertex2f(x4, y4);
+    glEnd();
+
+    glFlush();
+}
+
+void reshape(int w, int h) {
+    glViewport(0, 0, w, h);
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    gluOrtho2D(-100, win_width, -100, win_height);
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+}
+
+int main(int argc, char *argv[]) {
+    x = 100;
+    y = 100;
+    width = 200;
+    height = 50;
+
+    glutInit(&argc, argv);
+    glutInitDisplayMode(GLUT_SINGLE | GLUT_RGB);
+    glutInitWindowSize(win_width, win_height);
+    glutInitWindowPosition(100, 100);
+    glutCreateWindow("Rotate Rectangle Using Matrix Multiplication-Swarup");
+
+    glClearColor(1.0, 1.0, 1.0, 1.0);
+    glutDisplayFunc(display);
+    glutReshapeFunc(reshape);
+
+    glutMainLoop();
+
+    return 0;
+}
